@@ -63,14 +63,14 @@ namespace Visma_Internship
                 return true;
             }
         }
-        public void DeleteShortage(string title, string currentUserName, UserRole currentUserRole)
+        public bool DeleteShortage(string title, string currentUserName, UserRole currentUserRole)
         {
             var shortage = shortages.FirstOrDefault(s => s.Title.Equals(title, StringComparison.OrdinalIgnoreCase));
 
             if (shortage == null)
             {
                 Console.WriteLine("Shortage not found.");
-                return;
+                return false;
             }
 
             if (shortage.CreatorName.Equals(currentUserName, StringComparison.OrdinalIgnoreCase) || currentUserRole == UserRole.Administrator)
@@ -78,10 +78,12 @@ namespace Visma_Internship
                 shortages.Remove(shortage);
                 SaveChanges();
                 Console.WriteLine("Shortage deleted successfully.");
+                return true;
             }
             else
             {
                 Console.WriteLine("You do not have permission to delete this shortage.");
+                return false;
             }
         }
         public IEnumerable<Shortage> ListShortages(string currentUser, UserRole role,
@@ -130,6 +132,10 @@ namespace Visma_Internship
 
             var jsonData = System.Text.Json.JsonSerializer.Serialize(shortages, options);
             File.WriteAllText(FileName, jsonData);
+        }
+        public int Count()
+        {
+            return shortages.Count;
         }
     }
 }
